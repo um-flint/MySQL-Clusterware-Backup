@@ -1,0 +1,28 @@
+[clusterware]
+xag_home = /u01/xag-standalone
+grid_home = /u01/app/12.1.0/grid
+
+#This should be a list of all the instances you want to backup
+#The name here should be the name you gave them with XAG
+instances = foobar,anotherdbhere,and_more_yet
+
+[mysqlbackup]
+#Use Oracle Secure Backup to write to tape
+use_osb = True
+
+#Name of the Database Backup Storage Selectors to use from Oracle Secure Backup - 8 character limit
+#Must be a MySQL limitation - OSB will let you create one over 8 characters
+sbt-database-name = MySQL
+
+#For OSB backup-dir should be the name of a temp directory to be created inside the MySQL Home
+#Otherwise should be the path you are writing your backups to
+backup-dir = backup-tmp
+
+#User to connect to the database and perform the backup as
+user = root
+
+#Not currently implemeneted - have to use account with auth_socket
+password = foobar
+
+#If enabled output from mysqlbackup will always be displayed
+verbose = False
