@@ -5,10 +5,12 @@ import subprocess
 import socket
 import time
 import shutil
+import os
+import sys
 
 def main():
     config = ConfigParser.ConfigParser()
-    config.readfp(open('mysqlClusterwareBackup.cfg'))
+    config.readfp(open(os.path.join(sys.path[0], 'mysqlClusterwareBackup.cfg')))
 
     xag_home = config.get('clusterware','xag_home')
     grid_home = config.get('clusterware','grid_home')
