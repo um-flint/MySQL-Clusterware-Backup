@@ -58,7 +58,7 @@ def main():
                         meb = mysql_home + '/meb/mysqlbackup'
                         socket_arg = '--socket='+mysql_socket
                         user_arg = '--user='+backup_user
-                        bi_arg = '--backup-image=sbt'+instance_name+time.strftime('%Y-%m-%d')
+                        bi_arg = '--backup-image=sbt:'+instance_name+time.strftime('%Y-%m-%d')
                         sbt_db_arg = '--sbt-database-name='+sbt_db
                         bdir_arg = '--backup-dir='+backup_dir
                         btype_arg = 'backup-to-image'
