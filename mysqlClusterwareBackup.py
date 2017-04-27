@@ -50,14 +50,22 @@ def main():
                     backup_dir = mysql_home + '/' + config.get('mysqlbackup', 'backup-dir')
                     backup_user = config.get('mysqlbackup', 'user')
                     verbose_output = config.getboolean('mysqlbackup', 'verbose')
+                    use_compression = config.get('mysqlbackup','compression')
                     
                     meb = mysql_home + '/meb/mysqlbackup'
                     socket_arg = '--socket='+mysql_socket
                     user_arg = '--user='+backup_user
                     bdir_arg = '--backup-dir='+backup_dir
-
+                    
                     meb_cmd = []
                     meb_cmd.extend([meb, socket_arg, user_arg, bdir_arg])
+
+                    if use_compression is True:
+                        meb_cmd.append('--compress')
+
+                        if config.has_option('mysqlbackup', 'compression_method'):
+                            compression_type = '--compress-method=' + config.get('mysqlbackup', 'compression_method')
+                            meb_cmd.append(compression_type)
 
                     if use_osb is True:
                         sbt_db = config.get('mysqlbackup', 'sbt-database-name')

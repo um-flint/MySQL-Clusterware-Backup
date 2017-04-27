@@ -26,3 +26,10 @@ password = foobar
 
 #If enabled output from mysqlbackup will always be displayed
 verbose = False
+
+#if true, enables compression for the backup job
+compression = True
+
+#if compression is enabled optionally set the compression type
+#default is lz4
+#compression_method = lz4
