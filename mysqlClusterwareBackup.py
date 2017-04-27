@@ -50,7 +50,7 @@ def main():
                     backup_dir = mysql_home + '/' + config.get('mysqlbackup', 'backup-dir')
                     backup_user = config.get('mysqlbackup', 'user')
                     verbose_output = config.getboolean('mysqlbackup', 'verbose')
-                    use_compression = config.get('mysqlbackup','compression')
+                    use_compression = config.getboolean('mysqlbackup','compression')
                     
                     meb = mysql_home + '/meb/mysqlbackup'
                     socket_arg = '--socket='+mysql_socket
