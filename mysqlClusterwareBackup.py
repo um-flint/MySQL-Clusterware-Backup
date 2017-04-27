@@ -46,25 +46,29 @@ def main():
                     print '  Attempting to backup instance', instance_name
 
                     mysql_socket = datadir + '/mysql.sock'
-
                     use_osb = config.getboolean('mysqlbackup', 'use_osb')
+                    backup_dir = mysql_home + '/' + config.get('mysqlbackup', 'backup-dir')
+                    backup_user = config.get('mysqlbackup', 'user')
+                    verbose_output = config.getboolean('mysqlbackup', 'verbose')
+                    
+                    meb = mysql_home + '/meb/mysqlbackup'
+                    socket_arg = '--socket='+mysql_socket
+                    user_arg = '--user='+backup_user
+                    bdir_arg = '--backup-dir='+backup_dir
+
+                    meb_cmd = []
+                    meb_cmd.extend([meb, socket_arg, user_arg, bdir_arg])
 
                     if use_osb is True:
                         sbt_db = config.get('mysqlbackup', 'sbt-database-name')
-                        backup_dir = mysql_home + '/' + config.get('mysqlbackup', 'backup-dir')
-                        backup_user = config.get('mysqlbackup', 'user')
-                        verbose_output = config.getboolean('mysqlbackup', 'verbose')
 
-                        meb = mysql_home + '/meb/mysqlbackup'
-                        socket_arg = '--socket='+mysql_socket
-                        user_arg = '--user='+backup_user
                         bi_arg = '--backup-image=sbt:'+instance_name+'-'+time.strftime('%Y-%m-%d')
                         sbt_db_arg = '--sbt-database-name='+sbt_db
-                        bdir_arg = '--backup-dir='+backup_dir
                         btype_arg = 'backup-to-image'
-                        
+                       
+                        meb_cmd.extend([bi_arg, sbt_db_arg, btype_arg])
                         try: 
-                            backup_run = subprocess.check_output([meb, socket_arg, user_arg, bi_arg, sbt_db_arg, bdir_arg, btype_arg], stderr=subprocess.STDOUT).strip()
+                            backup_run = subprocess.check_output(meb_cmd, stderr=subprocess.STDOUT).strip()
                             print '  mysqlbackup return code was 0 - backup appears to have succeeded'
                             if verbose_output is True:
                                 print '  verbose output enabled - output from mysqlbackup follows'
