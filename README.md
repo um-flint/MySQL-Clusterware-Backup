@@ -4,6 +4,7 @@ By scheduling this as a cron job on every node in the cluster, you can make sure
 
 Currently, this code assumes:
  * You are using Oracle Secure Backup to write to tapes as your backup target.
+ * The socket is located in the datadir of the instance and named mysql.sock
  * You have configured a local account to run this job that has permission to log in to the MySQL database using auth_socket
  * You have a copy of MySQL Enterprise Backup located inside the MYSQL_HOME in a directory named 'meb'
  * You are not using MySQL that was installed from a package (i.e. you are using the tar version)
