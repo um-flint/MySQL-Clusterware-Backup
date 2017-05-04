@@ -7,6 +7,7 @@ import time
 import shutil
 import os
 import sys
+import glob
 
 def main():
     config = ConfigParser.ConfigParser()
@@ -98,6 +99,13 @@ def main():
                             print '**************************************************************'
                             print e.output.strip()
                             print '**************************************************************'
+
+                        if config.has_option('mysqlbackup', 'log-dir'):
+                            meb_log_dir = mysql_home + '/' + config.get('mysqlbackup', 'log-dir')
+                            meb_src_log = backup_dir + '/meta/MEB*.log'
+                            print '  copying MEB log to', meb_log_dir
+                            for data in glob.glob(meb_src_log):
+                                shutil.copy(data, meb_log_dir)
 
                         print '  removing',  backup_dir
                         shutil.rmtree(backup_dir)

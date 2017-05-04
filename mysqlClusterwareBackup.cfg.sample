@@ -18,6 +18,10 @@ sbt-database-name = MySQL
 #Otherwise should be the path you are writing your backups to
 backup-dir = backup-tmp
 
+#For OSB log-dir should be the path (relative to mysql_home)
+#to copy the MEB log to before deleting the backup-dir
+#log-dir = log/meb
+
 #User to connect to the database and perform the backup as
 user = root
 
