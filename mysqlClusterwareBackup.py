@@ -10,16 +10,24 @@ import sys
 import glob
 
 def main():
+    #parse the config file
     config = ConfigParser.ConfigParser()
     config.readfp(open(os.path.join(sys.path[0], 'mysqlClusterwareBackup.cfg')))
 
+    #set path to different Oracle Homes and binaries
     xag_home = config.get('clusterware','xag_home')
     grid_home = config.get('clusterware','grid_home')
+    agctl = xag_home + '/bin/agctl'
+
+    #Get list of instance names to attempt backup of
     instances = config.get('clusterware', 'instances')
 
-    agctl = xag_home + '/bin/agctl'
+    #Get hostname of machine
     hostname = socket.gethostname().split('.')[0]
 
+    #Loop through instances to attempt backup of and see if they are running on this node
+    #If they are, back them up
+    #Otherwise, skip them (they are stopped or on another node)
     for instance in instances.split(','):
         instance_name = instance.strip()
         
@@ -43,9 +51,11 @@ def main():
                 elif datadir is None:
                     print '  Could not find MySQL Home for', instance_name, '- skipping it'
 
+                #"We got one!"
                 else:
                     print '  Attempting to backup instance', instance_name
 
+                    #set backup options based upon instance name and the config file
                     mysql_socket = datadir + '/mysql.sock'
                     use_osb = config.getboolean('mysqlbackup', 'use_osb')
                     backup_dir = mysql_home + '/' + config.get('mysqlbackup', 'backup-dir')
@@ -68,14 +78,18 @@ def main():
                             compression_type = '--compress-method=' + config.get('mysqlbackup', 'compression_method')
                             meb_cmd.append(compression_type)
 
+                    #Attempt backup using Oracle Secure Backup integration
                     if use_osb is True:
                         sbt_db = config.get('mysqlbackup', 'sbt-database-name')
 
+                        #set sbt options for mysqlbackup
                         bi_arg = '--backup-image=sbt:'+instance_name+'-'+time.strftime('%Y-%m-%d')
                         sbt_db_arg = '--sbt-database-name='+sbt_db
                         btype_arg = 'backup-to-image'
                        
                         meb_cmd.extend([bi_arg, sbt_db_arg, btype_arg])
+
+                        #Start the backup job and monitor the result
                         try: 
                             backup_run = subprocess.check_output(meb_cmd, stderr=subprocess.STDOUT).strip()
                             print '  mysqlbackup return code was 0 - backup appears to have succeeded'
@@ -100,6 +114,7 @@ def main():
                             print e.output.strip()
                             print '**************************************************************'
 
+                        #If specified in the config, keep the log file from the job
                         if config.has_option('mysqlbackup', 'log-dir'):
                             meb_log_dir = mysql_home + '/' + config.get('mysqlbackup', 'log-dir')
                             meb_src_log = backup_dir + '/meta/MEB*.log'
@@ -107,6 +122,7 @@ def main():
                             for data in glob.glob(meb_src_log):
                                 shutil.copy(data, meb_log_dir)
 
+                        #Data was backed up using SBT so local metadata from backup is not needed anymore
                         print '  removing',  backup_dir
                         shutil.rmtree(backup_dir)
 
